@@ -10,8 +10,8 @@ use std::error::Error;
 
 #[derive(NetworkBehaviour)]
 pub struct P2PNetworkBehaviour {
-    pub mdns: mdns::tokio::Behaviour,
-    pub kademlia: kad::Kademlia<kad::store::MemoryStore>,
+    pub mdns: libp2p::mdns::tokio::Behaviour,
+    pub kademlia: libp2p::kad::Behaviour<libp2p::kad::store::MemoryStore>,
 }
 
 pub struct P2PNetwork {

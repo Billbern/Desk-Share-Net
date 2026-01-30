@@ -13,4 +13,4 @@ pub type PeerId = String;
 pub use network::P2PNetwork;
 pub use discovery::NetworkDiscovery;
 pub use signalling::SignalingServer;
-pub use transport::WebRTCTransport;
+pub use transport::P2PTransport;

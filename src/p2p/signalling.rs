@@ -1,10 +1,5 @@
-use libp2p::{
-    request_response::{
-        ProtocolSupport, RequestResponse, RequestResponseCodec, RequestResponseEvent,
-        RequestResponseMessage, ResponseChannel,
-    },
-    swarm::NetworkBehaviour,
-    PeerId,
+use libp2p::request_response::{
+    Codec, Behaviour, ProtocolSupport,
 };
 use async_trait::async_trait;
 use futures::prelude::*;
@@ -59,12 +54,18 @@ pub enum SignalingMessage {
 }
 
 /// Signaling protocol codec for libp2p
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct SignalingCodec;
 
+impl AsRef<str> for SignalingCodec {
+    fn as_ref(&self) -> &str {
+        "/webrtc-signaling/1.0.0"
+    }
+}
+
 #[async_trait]
-impl RequestResponseCodec for SignalingCodec {
-    type Protocol = String;
+impl Codec for SignalingCodec {
+    type Protocol = SignalingCodec;
     type Request = SignalingMessage;
     type Response = SignalingMessage;
 
@@ -134,7 +135,7 @@ impl RequestResponseCodec for SignalingCodec {
 /// Signaling server for WebRTC connections
 pub struct SignalingServer {
     /// Request-response behavior for libp2p
-    behaviour: RequestResponse<SignalingCodec>,
+    behaviour: Behaviour<SignalingCodec>,
     
     /// Pending signaling messages
     pending_messages: Arc<RwLock<HashMap<String, Vec<SignalingMessage>>>>,
@@ -149,11 +150,9 @@ pub struct SignalingServer {
 
 impl SignalingServer {
     pub fn new(local_peer_id: String) -> Self {
-        let protocols = vec!["/webrtc-signaling/1.0.0".to_string()];
-        let behaviour = RequestResponse::new(
-            SignalingCodec,
-            protocols.into_iter().map(|p| (p, ProtocolSupport::Full)),
-            Default::default(),
+        let behaviour = Behaviour::new(
+            std::iter::once((SignalingCodec, ProtocolSupport::Full)),
+            libp2p::request_response::Config::default(),
         );
         
         let (message_tx, message_rx) = mpsc::channel(100);

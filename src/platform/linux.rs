@@ -29,28 +29,36 @@ pub async fn capture_screen(resolution: (u32, u32)) -> Result<Vec<u8>, Error> {
         }
     }
     
-    // Fallback to screenshot crate
-    match screenshot::Screen::all() {
-        Ok(screens) => {
-            if let Some(screen) = screens.first() {
-                let image = screen.capture()?;
-                let (width, height) = image.dimensions();
-                
-                // Resize if needed
-                if width != resolution.0 || height != resolution.1 {
-                    let resized = image.resize_exact(
-                        resolution.0,
-                        resolution.1,
-                        image::imageops::FilterType::Lanczos3
-                    );
-                    return encode_image(&resized);
+    
+    // Fallback to xcap crate
+    match xcap::Monitor::all() {
+        Ok(monitors) => {
+            if let Some(monitor) = monitors.first() {
+                match monitor.capture_image() {
+                    Ok(image) => {
+                        let dynamic_image = image::DynamicImage::ImageRgba8(image);
+                        let (width, height) = dynamic_image.dimensions();
+                        
+                        // Resize if needed
+                        if width != resolution.0 || height != resolution.1 {
+                            let resized = dynamic_image.resize_exact(
+                                resolution.0,
+                                resolution.1,
+                                image::imageops::FilterType::Lanczos3
+                            );
+                            return encode_image(&resized);
+                        }
+                        
+                        return encode_image(&dynamic_image);
+                    }
+                    Err(e) => {
+                        tracing::warn!("XCap capture failed: {}, using test pattern", e);
+                    }
                 }
-                
-                return encode_image(&image);
             }
         }
         Err(e) => {
-            tracing::warn!("Screenshot crate failed: {}, using test pattern", e);
+            tracing::warn!("XCap monitor enumeration failed: {}, using test pattern", e);
         }
     }
     

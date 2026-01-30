@@ -6,6 +6,6 @@ pub mod screen_share;
 pub mod chat;
 
 // Re-export service types
-pub use file_share::MeshFileShare;
-pub use screen_share::MeshScreenShare;
-pub use chat::MeshChat;
+pub use file_share::FileTransfer;
+pub use screen_share::ScreenShare;
+pub use chat::ChatService;

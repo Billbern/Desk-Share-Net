@@ -1,0 +1,43 @@
+[package]
+name = "desk-share-net"
+version = "0.1.0"
+description = "Local Network Screen Sharing and File Transfer"
+authors = ["You"]
+license = ""
+repository = ""
+default-run = "desk-share-net"
+edition = "2021"
+rust-version = "1.70"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = ["shell-open", "process-command-api"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+chrono = "0.4"
+
+# Reference to the main library
+desk-share-net = { path = ".." }
+
+# Legacy dependencies (may need cleanup)
+mdns = "0.6"
+local-ip-address = "0.5"
+sysinfo = "0.30"
+image = "0.24"
+screenshot = "0.2"
+futures = "0.3"
+reqwest = { version = "0.11", features = ["stream"] }
+websocket = "0.26"
+sha2 = "0.10"
+base64 = "0.21"
+walkdir = "2.4"
+notify = "6.1"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

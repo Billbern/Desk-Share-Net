@@ -1,19 +1,19 @@
 [package]
-name = "desk-share-net"
+name = "desk-share-net-app"
 version = "0.1.0"
 description = "Local Network Screen Sharing and File Transfer"
 authors = ["You"]
 license = ""
 repository = ""
-default-run = "desk-share-net"
+default-run = "desk-share-net-app"
 edition = "2021"
 rust-version = "1.70"
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = ["shell-open", "process-command-api"] }
+tauri = { version = "2", features = [] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.0", features = ["full"] }
@@ -22,11 +22,11 @@ tracing-subscriber = "0.3"
 chrono = "0.4"
 
 # Reference to the main library
-desk-share-net = { path = ".." }
+desk-share-net-lib = { path = "..", package = "desk-share-net" }
 
 # Legacy dependencies (may need cleanup)
-mdns = "0.6"
-local-ip-address = "0.5"
+mdns = "3.0"
+local-ip-address = "0.6"
 sysinfo = "0.30"
 image = "0.24"
 xcap = { version = "0.8", features = ["image"] }

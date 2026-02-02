@@ -19,6 +19,9 @@ export default defineConfig({
         minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
         // produce sourcemaps for debug builds
         sourcemap: !!process.env.TAURI_DEBUG,
+        rollupOptions: {
+            input: 'public/index.html',
+        },
     },
     // Use public directory for static assets
     publicDir: 'public',

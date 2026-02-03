@@ -2,18 +2,10 @@ use anyhow::Error;
 use image::{ImageBuffer, Rgba, DynamicImage};
 use std::io::Cursor;
 
+// Windows Graphics Capture API types - currently using xcap fallback instead
+// TODO: Update to windows crate v0.52+ API when implementing native capture
 #[cfg(target_os = "windows")]
-use windows::{
-    Graphics::Capture::GraphicsCaptureItem,
-    Win32::Graphics::{
-        Direct3D11::{
-            ID3D11Device, ID3D11DeviceContext, ID3D11Texture2D,
-            D3D11_TEXTURE2D_DESC, D3D11_USAGE_STAGING,
-            D3D11_CPU_ACCESS_READ, D3D11_BIND_FLAG,
-        },
-        Dxgi::{IDXGIDevice, DXGI_FORMAT_B8G8R8A8_UNORM},
-    },
-};
+use windows::Graphics::Capture::GraphicsCaptureItem;
 
 /// Capture the screen on Windows using Graphics Capture API
 /// Falls back to screenshot crate if native API fails
@@ -67,10 +59,10 @@ pub async fn capture_screen(resolution: (u32, u32)) -> Result<Vec<u8>, Error> {
 }
 
 /// Capture screen using Windows Graphics Capture API
+/// TODO: Implement with windows crate v0.52+ types
 #[cfg(target_os = "windows")]
-async fn capture_with_graphics_api(resolution: (u32, u32)) -> Result<Vec<u8>, Error> {
-    // This is a simplified implementation
-    // Full implementation would require:
+async fn capture_with_graphics_api(_resolution: (u32, u32)) -> Result<Vec<u8>, Error> {
+    // Full implementation would require updated windows crate types:
     // 1. Create D3D11 device
     // 2. Create GraphicsCaptureItem for primary monitor
     // 3. Create frame pool
@@ -78,7 +70,7 @@ async fn capture_with_graphics_api(resolution: (u32, u32)) -> Result<Vec<u8>, Er
     // 5. Copy to staging texture
     // 6. Map and read pixels
     
-    // For now, return error to fallback
+    // For now, return error to fallback to xcap
     Err(anyhow::anyhow!("Windows Graphics Capture API not fully implemented"))
 }
 
@@ -105,7 +97,7 @@ fn generate_test_pattern(resolution: (u32, u32)) -> Vec<u8> {
     
     // Convert to JPEG
     let mut buffer = Vec::new();
-    let encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut buffer, 70);
+    let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut buffer, 70);
     encoder.encode(&img, width, height, image::ColorType::Rgba8).unwrap();
     
     buffer

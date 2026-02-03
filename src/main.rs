@@ -5,7 +5,8 @@ mod p2p;
 mod services;
 pub mod error;
 
-pub use network::{NetworkDiscovery, FileTransfer, ScreenShare};
+pub use crate::p2p::NetworkDiscovery;
+use crate::services::{FileTransfer, ScreenShare, ChatService};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
